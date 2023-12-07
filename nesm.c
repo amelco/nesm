@@ -5,26 +5,47 @@
 #include "cpu.h"
 #include "rom.h"
 
-#define FONT_SIZE 20
+#define FONT_SIZE 10
+
+typedef struct {
+    unsigned char data[RAMSIZE];
+} RAM;
+
 
 int main(void) {
     Rom* rom = loadRom("data/all_instrs.nes");
     // printRomContent(rom);
 
     CPU cpu;
-    cpu_init(&cpu, rom);
+    RAM ram;
+    cpu_init(&cpu);
+    print_registers(&cpu);
+
+    // seta reset vector para o endereço de entrada do programa
+    ram.data[0xFFFC] = 0x80;
+    ram.data[0xFFFD] = 0x25;
+    // pega, do reset vector, o endereço de entrada do programa 
+    cpu.PC = (ram.data[0xFFFD] << 8) + ram.data[0xFFFC];
+    
+    unsigned char op = exec_next_instruction(&cpu, rom);
+    switch (op) {
+    case 0xA9: // LDA immediate mode
+        cpu.A = exec_next_instruction(&cpu, rom);
+        break;
+    }
+    print_registers(&cpu);
+
+    return 0;
+
 
     InitWindow(800, 600, "Nesm");
     SetTargetFPS(60);
-    Font font = LoadFontEx("./resources/fonts/Alegreya-Regular.ttf", FONT_SIZE, NULL, 0);
     while (!WindowShouldClose()) {
-        char text[50] = {'\0'};
-        sprintf(text, "A = %d", cpu.A);
-
         BeginDrawing();
         {
-            Vector2 pos = {10, 20};
-            DrawTextEx(font, text, pos, FONT_SIZE, 0, WHITE);
+            char text[50] = {'\0'};
+            sprintf(text, "A: %02x\nX: %02x\nY: %02x\n", cpu.A, cpu.X, cpu.Y);
+            DrawText(text, 10, 20, FONT_SIZE, WHITE);
         }
         EndDrawing();
     }

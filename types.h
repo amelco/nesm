@@ -1,7 +1,9 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-typedef char  Byte;
-typedef short Word;
+#define RAMSIZE 0xFFFF
+
+typedef unsigned char  Byte;
+typedef unsigned short Word;
 
 #endif  //TYPES_H
