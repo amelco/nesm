@@ -38,9 +38,6 @@ int main(void) {
     execute_next_instruction(&cpu, ram);
     print_registers(&cpu);
     
-    LDA((unsigned char*)0x1d);
-
-    
     return 0;
 
 
