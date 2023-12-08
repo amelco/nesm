@@ -1,8 +1,8 @@
 #include "rom.h"
 
-Rom* readRom(FILE* fd)
+ROM* readRom(FILE* fd)
 {
-    Rom* rom = malloc(sizeof(Rom));
+    ROM* rom = malloc(sizeof(ROM));
 
     fseek(fd, 0, SEEK_END);
     rom->size = ftell(fd);
@@ -19,7 +19,7 @@ Rom* readRom(FILE* fd)
     return rom;
 }
 
-Rom* loadRom(char* filePath)
+ROM* loadRom(char* filePath)
 {
     FILE* fd = fopen(filePath, "rb");
     if (fd == NULL)
@@ -30,7 +30,7 @@ Rom* loadRom(char* filePath)
     return readRom(fd);
 }
 
-void printRomContent(Rom* rom)
+void printRomContent(ROM* rom)
 {
     for(size_t i=0; i<rom->size; ++i) {
         printf("%02x ", rom->data[i]);
@@ -40,7 +40,7 @@ void printRomContent(Rom* rom)
     printf("\n");
 }
 
-void closeRom(Rom* rom)
+void closeRom(ROM* rom)
 {
     free(rom->data);
 }

@@ -4,16 +4,12 @@
 
 #include "cpu.h"
 #include "rom.h"
+#include "ram.h"
 
 #define FONT_SIZE 10
 
-typedef struct {
-    unsigned char data[RAMSIZE];
-} RAM;
-
-
 int main(void) {
-    Rom* rom = loadRom("data/all_instrs.nes");
+    ROM* rom = loadRom("data/all_instrs.nes");
     // printRomContent(rom);
 
     CPU cpu;
@@ -27,13 +23,12 @@ int main(void) {
     // pega, do reset vector, o endereço de entrada do programa 
     cpu.PC = (ram.data[0xFFFD] << 8) + ram.data[0xFFFC];
     
-    unsigned char op = exec_next_instruction(&cpu, rom);
-    switch (op) {
-    case 0xA9: // LDA immediate mode
-        cpu.A = exec_next_instruction(&cpu, rom);
-        break;
-    }
     print_registers(&cpu);
+    execute_next_instruction(&cpu, rom, &ram);
+    print_registers(&cpu);
+    execute_next_instruction(&cpu, rom, &ram);
+    print_registers(&cpu);
+    execute_next_instruction(&cpu, rom, &ram);
 
     return 0;
 

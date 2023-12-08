@@ -8,10 +8,10 @@ typedef struct
 {
     unsigned char* data;
     size_t size;
-} Rom;
+} ROM;
 
-Rom* loadRom(char* filePath);
-void printRomContent(Rom* rom);
-void closeRom(Rom* rom);
+ROM* loadRom(char* filePath);
+void printRomContent(ROM* rom);
+void closeRom(ROM* rom);
 
 #endif //ROM_H

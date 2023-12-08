@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "rom.h"
+#include "ram.h"
 
 typedef struct {
     Word PC;
@@ -13,12 +14,9 @@ typedef struct {
     Byte P;
 } CPU;
 
-
-
 void print_registers(CPU* cpu);
 void cpu_init(CPU* cpu);
 void cpu_reset(CPU* cpu);
-unsigned char exec_next_instruction(CPU* cpu, Rom* rom);
-
+void execute_next_instruction(CPU* cpu, ROM* rom, RAM* ram);
 
 #endif //CPU_H
