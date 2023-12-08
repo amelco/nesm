@@ -1,36 +1,50 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <raylib.h>
 #include <stdlib.h>
 
-#include "cpu.h"
 #include "rom.h"
-#include "ram.h"
+#include "types.h"
+#include "cpu.h"
 
 #define FONT_SIZE 10
+#define RAM_SIZE 64*1024    // 64 kb
+
+void printRamContent(unsigned char* ram, size_t ini, size_t end)
+{
+    for(size_t i=ini; i<end; ++i) {
+        printf("%02x ", ram[i]);
+        if ((i+1)%8==0) printf(" ");
+        if ((i+1)%16==0) printf("\n");
+    }
+    printf("\n");
+}
 
 int main(void) {
-    ROM* rom = loadRom("data/all_instrs.nes");
-    // printRomContent(rom);
-
     CPU cpu;
-    RAM ram;
     cpu_init(&cpu);
-    print_registers(&cpu);
+    unsigned char ram[RAM_SIZE];
 
-    // seta reset vector para o endereço de entrada do programa
-    ram.data[0xFFFC] = 0x80;
-    ram.data[0xFFFD] = 0x25;
-    // pega, do reset vector, o endereço de entrada do programa 
-    cpu.PC = (ram.data[0xFFFD] << 8) + ram.data[0xFFFC];
+    loadRom("data/test.nes", ram);
     
-    print_registers(&cpu);
-    execute_next_instruction(&cpu, rom, &ram);
-    print_registers(&cpu);
-    execute_next_instruction(&cpu, rom, &ram);
-    print_registers(&cpu);
-    execute_next_instruction(&cpu, rom, &ram);
+    // seta reset vector para o endereço de entrada do programa
+    ram[0xFFFC] = 0x00;
+    ram[0xFFFD] = 0x80;
+    // pega, do reset vector, o endereço de entrada do programa 
+    cpu.PC = (ram[0xFFFD] << 8) + ram[0xFFFC];
 
+    printRamContent(ram, 0x8000, 0x8010);
+    print_registers(&cpu);
+    execute_next_instruction(&cpu, ram);
+    print_registers(&cpu);
+    
+    LDA((unsigned char*)0x1d);
+
+    
     return 0;
+
+
+
 
 
     InitWindow(800, 600, "Nesm");
@@ -45,7 +59,6 @@ int main(void) {
         EndDrawing();
     }
     CloseWindow();
-    closeRom(rom);
 
     return 0;
 }

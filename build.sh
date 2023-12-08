@@ -7,4 +7,4 @@ LIBS="-L/usr/local/lib"
 
 mkdir -p build
 #gcc -Wall -Wextra cpu.c nesm.c -o build/nesm
-clang $CFLAGS -o ./build/nesm ./cpu.c ./rom.c ./nesm.c $LIBS
+clang $CFLAGS -o ./build/nesm ./src/cpu.c ./src/rom.c ./src/nesm.c $LIBS
