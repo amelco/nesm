@@ -28,15 +28,17 @@ int main(void) {
     loadRom("data/test.nes", ram);
     
     // seta reset vector para o endereço de entrada do programa
+    ram[0xEE] = 0xAA;
     ram[0xFFFC] = 0x00;
     ram[0xFFFD] = 0x80;
     // pega, do reset vector, o endereço de entrada do programa 
     cpu.PC = (ram[0xFFFD] << 8) + ram[0xFFFC];
 
     printRamContent(ram, 0x8000, 0x8010);
-    print_registers(&cpu);
+
     execute_next_instruction(&cpu, ram);
-    print_registers(&cpu);
+    execute_next_instruction(&cpu, ram);
+
     
     return 0;
 
