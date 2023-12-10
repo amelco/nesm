@@ -1,26 +1,8 @@
 #include <stdio.h>
+
 #include "cpu.h"
 #include "types.h"
 #include "types.h"
-
-#define push_stack(cpu,ram)\
-    ram[cpu->S--] = cpu->PC & 0x00FF;\
-    ram[cpu->S--] = (cpu->PC & 0xFF00) >> 8
-
-#define set_bit(byte, pos)   byte |= 1 << pos
-#define get_bit(byte, pos) ((byte & (1 << pos)) != 0)
-#define set_carry(byte)      set_bit(byte, 0)
-#define set_zero(byte)       set_bit(byte, 1)
-#define set_interrupt(byte)  set_bit(byte, 2)
-#define set_decimal(byte)    set_bit(byte, 3)
-#define set_overflow(byte)   set_bit(byte, 6)
-#define set_negative(byte)   set_bit(byte, 7)
-#define get_carry(byte)      get_bit(byte, 0)
-#define get_zero(byte)       get_bit(byte, 1)
-#define get_interrupt(byte)  get_bit(byte, 2)
-#define get_decimal(byte)    get_bit(byte, 3)
-#define get_overflow(byte)   get_bit(byte, 6)
-#define get_negative(byte)   get_bit(byte, 7)
 
 // https://www.nesdev.org/wiki/CPU_power_up_state
 void cpu_init(CPU* cpu){
@@ -45,7 +27,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
     unsigned short cycles = 0;
 
     switch (op) {
-    case 0xA9:  // LDA immediate mode
+    case LDA_IMM:
     {
         cycles = 2;
         cpu->A = ram[cpu->PC];
@@ -54,7 +36,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
         if (get_negative(cpu->A) == 1) set_negative(cpu->P);
         break;
     }
-    case 0xA5:  // LDA zeropage
+    case LDA_ZRP:
     {
         cycles = 3;
         unsigned char addr = ram[cpu->PC];
@@ -64,7 +46,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
         if (get_negative(cpu->A) == 1) set_negative(cpu->P);
         break;
     }
-    case 0xB5:  // LDA zeropage, X
+    case LDA_ZPX:
     {
         cycles = 3;
         unsigned char addr = ram[(cpu->PC) + (cpu->X)];
@@ -74,7 +56,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
         if (get_negative(cpu->A) == 1) set_negative(cpu->P);
         break;
     }
-    case 0x20:  // JSR
+        case JSR:
     {
         cycles = 6;
         push_stack(cpu, ram);
@@ -87,9 +69,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
         printf("ERROR: op_code '%02x' not implemented.\n", op);
     }
 
-    printf(" A:   %02X\n", cpu->A);
-    printf("PC: %04X\n", cpu->PC);
-    printf(" P: %08b\n", cpu->P);
+    print_registers(cpu);
 
     //  emulation of processing time
     while (cycles > 0)  cycles--;
@@ -98,6 +78,7 @@ void execute_next_instruction(CPU* cpu, unsigned char* ram) {
 }
 
 void print_registers(CPU* cpu){
-    printf("A: %02x\n", cpu->A);
-    printf("PC: %04x\n", cpu->PC);
+    printf(" A:   %02X\n", cpu->A);
+    printf("PC: %04X\n", cpu->PC);
+    printf(" P: %08b\n", cpu->P);
 }
